@@ -1,0 +1,177 @@
+#Decoration section in theme file
+source=~/.config/hypr/themes/color.thmswitch #select temp scheme
+
+monitor=,preferred,auto,1
+
+input {
+	kb_layout=pt
+	follow_mouse=1
+	force_no_accel=true
+	natural_scroll=false
+
+	touchpad {
+	disable_while_typing=false
+	}
+}
+gestures {
+	workspace_swipe=true
+	workspace_swipe_invert=true
+}
+
+general {
+    sensitivity=1
+
+    gaps_in=5
+    gaps_out=5
+    border_size=2
+	layout=dwindle
+}
+
+dwindle {
+preserve_split=true
+}
+
+master {
+	new_is_master=false
+}
+
+animations {
+    enabled=1
+}
+
+decoration {
+    rounding=3
+    blur=1
+    blur_size=4
+    blur_passes=2
+    blur_new_optimizations=true
+
+    drop_shadow=1
+    shadow_range=20
+    shadow_render_power=2
+    shadow_ignore_window=1
+    shadow_offset= 8 8
+    col.shadow=0x44000000
+}
+
+#--------Startup programs--------
+source=~/.config/hypr/exports.conf #env vars
+source=~/.config/hypr/startup.conf #startup programs
+exec=pkill waybar;waybar &
+
+#--------Keybinds--------
+bindm=ALT,mouse:272,movewindow
+bindm=ALT,mouse:273,resizewindow
+
+bind=ALTCONTROL,Q,exit,
+bind=ALTSHIFT,R,exec,hyprctl reload
+bind=ALT,Space,togglefloating
+bind=ALT,Q,killactive,
+bind=ALT,C,pseudo,
+bind=ALT,F,fullscreen,
+
+bind=ALT,G,exec,~/scripts/togglegaps.sh
+
+bind=ALT,Return,exec,kitty -1
+
+bind=ALT,B,exec, pkill -SIGUSR1 '^waybar$'
+
+bind=,Print,exec,grim $HOME/Pictures/SS/$(date +'%Y%m%d%H%M%S_1.png') && notify-send 'Screenshot Saved'
+bind=SUPER,Print,exec,grim - | wl-copy && notify-send 'Screenshot Copied to Clipboard'
+bind=SUPERSHIFT,Print,exec,grim - | swappy -f -
+bind=SUPERSHIFT,S,exec,slurp | grim -g - /tmp/photo && wl-copy < /tmp/photo && notify-send 'Screenshot Copied to Clipboard'
+bind=ALTSHIFT,S,exec,slurp | grim -g - /tmp/photo && swappy -f /tmp/photo
+
+bind=ALT,D,exec,~/.config/rofi/scripts/launcher_t1
+bind=ALT,T,exec,~/.local/bin/theme_changer_WL
+bind=ALTCONTROL,X,exec,~/.local/bin/powermenu
+bind=ALTCONTROL,K,exec,~/.local/bin/hypr_bindings
+
+bind=ALTCONTROL,E,exec,busctl --user -- set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 5000
+bind=ALTCONTROL,R,exec,busctl --user -- set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 8000
+
+bind=ALTSHIFT,P,exec, gtklock
+
+bind=ALTSHIFT,T,exec,swaync-client -t
+
+bind=ALT,1,workspace,1
+bind=ALT,2,workspace,2
+bind=ALT,3,workspace,3
+bind=ALT,4,workspace,4
+bind=ALT,5,workspace,5
+bind=ALT,6,workspace,6
+bind=ALT,7,workspace,7
+bind=ALT,8,workspace,8
+bind=ALT,9,workspace,9
+bind=ALT,0,workspace,10
+
+bind=ALTSHIFT,1,movetoworkspacesilent,1
+bind=ALTSHIFT,2,movetoworkspacesilent,2
+bind=ALTSHIFT,3,movetoworkspacesilent,3
+bind=ALTSHIFT,4,movetoworkspacesilent,4
+bind=ALTSHIFT,5,movetoworkspacesilent,5
+bind=ALTSHIFT,6,movetoworkspacesilent,6
+bind=ALTSHIFT,7,movetoworkspacesilent,7
+bind=ALTSHIFT,8,movetoworkspacesilent,8
+bind=ALTSHIFT,9,movetoworkspacesilent,9
+bind=ALTSHIFT,0,movetoworkspacesilent,10
+
+bind=ALT,left,movefocus,l
+bind=ALT,right,movefocus,r
+bind=ALT,up,movefocus,u
+bind=ALT,down,movefocus,d
+
+bind=ALT,h,movefocus,l
+bind=ALT,l,movefocus,r
+bind=ALT,k,movefocus,u
+bind=ALT,j,movefocus,d
+
+bind=ALTSHIFT,left,movewindow,l
+bind=ALTSHIFT,right,movewindow,r
+bind=ALTSHIFT,up,movewindow,u
+bind=ALTSHIFT,down,movewindow,d
+
+bind=ALTSHIFT,h,movewindow,l
+bind=ALTSHIFT,l,movewindow,r
+bind=ALTSHIFT,k,movewindow,u
+bind=ALTSHIFT,j,movewindow,d
+
+bind=ALT,tab,workspace,+1
+bind=ALTSHIFT,tab,workspace,-1
+bind=ALT,period,focusmonitor,r
+bind=ALT,comma,focusmonitor,l
+bind=ALTSHIFT,period,movewindow,mon:r
+bind=ALTSHIFT,comma,movewindow,mon:l
+
+bind=ALTCONTROL,left,splitratio,-0.1
+bind=ALTCONTROL,right,splitratio,+0.1
+
+bind=ALTCONTROL,h,splitratio,-0.1
+bind=ALTCONTROL,l,splitratio,+0.1
+
+bind=ALT,V,togglesplit
+bind=ALTSHIFT,V,togglegroup
+bind=ALT,N,changegroupactive,f
+bind=ALTSHIFT,N,changegroupactive,b
+bind=ALT,S,layoutmsg,swapwithmaster
+
+bind=,XF86MonBrightnessUp,exec,sudo light -A 10.2
+bind=,XF86MonBrightnessDown,exec,sudo light -T 0.63
+
+bind=ALT,P,exec,playerctl play-pause
+bind=,XF86AudioRaiseVolume,exec,pactl set-sink-volume 0 +5%
+bind=,XF86AudioLowerVolume,exec,pactl set-sink-volume 0 -5%
+bind=,XF86AudioMute,exec,pactl set-sink-mute 0 toggle
+bind=,XF86Calculator,exec,qalculate-gtk
+
+#---Window rules---
+windowrule=opacity 0.95,^(discord)$
+windowrule=opacity 1,^(NoteKit)$
+
+windowrule=tile,^(huiontablet)$
+
+windowrule=float,qalculate
+windowrule=float,Rofi
+windowrule=float,ncmpcpp
+windowrule=float,viewnior
+windowrule=float,feh
