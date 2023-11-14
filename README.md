@@ -14,5 +14,8 @@ Take the example of nvim, which belongs in the ~/.config/ directory: `stow nvim 
 Stow should create the proper symlinks to the indicated target directory, allowing you to manage all of your dotfiles from within one directory.
 
 I would recommend putting your wallpapers into ~/wallpaper for the background stuff to work properly 
+
 ## Notes:
+I've had collected various scripts around the web from people whose dotfiles I like.
+
 I make no promises to keep this repo up to date or not to abandon it entirely. This is just to make my stuff look pretty. That said, stuffs pretty pretty ;)
