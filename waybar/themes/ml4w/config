@@ -13,7 +13,7 @@
 
     // Position TOP
     "layer": "top",
-    "margin-top": 14,
+    "margin-top": 2,
     "margin-bottom": 0,
 
     // Position BOTTOM
@@ -22,7 +22,7 @@
     // "margin-bottom": 14,
     
     "layer": "top",
-    "height": 16,
+    "height": 4,
     "margin-left": 0,
     "margin-right": 0,    
     "spacing": 0,
@@ -41,9 +41,9 @@
     ],
 
     // Modules Center
-    "modules-center": [
-        "hyprland/workspaces"
-    ],
+    //"modules-center": [
+    //    "hyprland/workspaces"
+    //],
 
     // Modules Right    
     "modules-right": [
