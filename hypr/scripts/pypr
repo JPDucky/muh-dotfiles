@@ -1,0 +1,4 @@
+import subprocess
+
+subprocess.run(["pypr", "toggle", "term", "--debug", "/tmp/pypr_toggle.log"], stdout=open('/tmp/launch.log', 'w'), stderr=subprocess.STDOUT)
+
