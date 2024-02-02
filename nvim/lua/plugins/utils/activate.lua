@@ -1,11 +1,6 @@
 return {
   "roobert/activate.nvim",
-  --  TODO: Move this to keybind file
-  keys = {
-    {
-      "<leader>lpp",
-      '<CMD>lua require("activate").list_plugins()<CR>',
-      desc = 'Plugins',
-    },
+  dependencies = {
+    { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } }
   }
 }

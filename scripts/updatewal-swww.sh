@@ -4,7 +4,7 @@ set -x
 # -----------------------------------------------------
 # Select random wallpaper and create color scheme
 # -----------------------------------------------------
-~/.local/bin/wal -q -i ~/wallpaper/
+/usr/bin/wal -q -i ~/wallpaper/
 
 # -----------------------------------------------------
 # Load current pywal color scheme
@@ -29,7 +29,7 @@ SWWW_TRANSITION_STEP=5
 SWWW_TRANSITION_BEZIER=.54,0,.34,.99
 SWWW_TRANSITION_POS=$(hyprctl cursorpos)
 
-~/bin/swww img "$wallpaper"
+/usr/bin/swww img "$wallpaper"
 
 ~/dotfiles/waybar/launch.sh
 # sleep 1

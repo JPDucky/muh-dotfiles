@@ -8,11 +8,78 @@ local dapui = require 'dapui'
 local tele = require('telescope.builtin')
 local bufferline = require('bufferline')
 local wk = require 'which-key'
+local telescope = require('telescope')
+local finders = require('telescope.finders')
+local pickers = require('telescope.pickers')
+local conf = require('telescope.config').values
+local actions = require('telescope.actions')
+local action_state = require('telescope.actions.state')
+
 
 local functions_module = require('after.plugins.functions.functions')
 
 -- local mappings = functions_module.default
 -- local project_keys = functions_module.project
+
+--
+--
+-- local custom_picker = function(opts)
+--
+--   opts = opts or {}
+--
+--   local results_func = opts.results_func
+--   if not results_func then
+--     print("No function provided")
+--     return
+--   end
+--
+--   pickers.new {
+--     prompt_title = opts.title or "Custom Picker"
+--     finder = finders.new_table{
+--       results = results_func(),
+--       entry_maker = makers.new_table()
+--     },
+--     sorter = conf.generic_sorter(opts),
+--     attach_mappings = opts.mappings or function()
+--       return true
+--     end,
+--   }
+-- end
+--
+-- local function get_buffer()
+--   local bufs = {}
+--   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+--     local buf_name = vim.api.nvim_buf_get_name(buf)
+--     table.insert(bufs, buf_name)
+--   end
+--   return bufs
+-- end
+--
+--
+-- require('telescope').extensions.custom_picker {
+--   result_func = get_buffers,
+--   mappings = function(prompt_bufnr)
+--   end,
+--   title = "Buffers"
+-- }
+--
+--
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- this feels most natural
@@ -37,8 +104,8 @@ return {
         zindex = 1000,
       },
       triggers_blacklist = {
-        i = { "j", "k" },
-        v = { "j", "k" },
+        -- i = { "j", "k" },
+        -- v = { "j", "k" },
         n = { "q", "@", "u", "t", "s", "c", "h", "j", "k", "l", "o" },
       },
     },
@@ -210,6 +277,11 @@ return {
         b = { function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, 'Debug: Set Breakpoint' },
       },
 
+      D = {
+        name = '+[D]efinitions',
+        -- t = { function() vim.lsp.buf.type_definition end, "type definition" },
+      },
+
       e = {
         name = "+[E]ditor",
         c = { function() tele.colorscheme {} end, "Select colorscheme" }
@@ -223,12 +295,21 @@ return {
       },
 
       g = {
-        name = "+[G]rep",
-        -- s = { function() tele.grep_string{} end, 'Grep String' }, -- TODO: add to visual mode
+        name = "+[g]rep/[g]oto",
+        S = { function() tele.grep_string {} end, 'Grep String' }, -- TODO: add to visual mode
         c = { function() tele.current_buffer_fuzzy_find(require('telescope.themes').get_cursor({})) end, "Current Buffer" },
         f = { function() tele.find_files(require('telescope.themes').get_dropdown({})) end, 'Grep file' },
         p = { function() tele.planets(require('telescope.themes').get_dropdown({})) end, "Search the planets..." },
         s = { function() tele.live_grep(require('telescope.themes').get_dropdown({})) end, 'Live Grep' },
+        l = {
+          name = "+[L]SP Stuff",
+          r = { function() tele.lsp_references(require('telescope.themes').get_cursor({})) end, "References" },
+          i = { function() tele.lsp_incoming_calls(require('telescope.themes').get_cursor({})) end, "Incoming Calls for word Under Cursor" },
+          o = { function() tele.lsp_outgoing_calls(require('telescope.themes').get_cursor({})) end, "Outgoing Calls for word Under Cursor" },
+          d = { function() tele.lsp_document_symbols(require('telescope.themes').get_cursor({})) end, "List Document Symbols in Current Buffer" },
+          w = { function() tele.lsp_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "List Document Symbols in Current Workspace" },
+          s = { function() tele.lsp_dynamic_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "Dynamically List LSP for all Workspace Symbols" },
+        },
       },
 
       --NOTE: Any of the telescope functions can have its theme changed to get_dropdown | get_cursor | get_ivy
@@ -246,27 +327,26 @@ return {
         name = "+[H]elp",
         h = { function() tele.help_tags(require('telescope.themes').get_dropdown({})) end, "Search Help Files" },
         c = { function() tele.commands(require('telescope.themes').get_dropdown({})) end, "List Available Plugin/User Commands" },
+        k = { "<Cmd>Hawtkeys<CR>", "Hawtkeys search" },
       },
 
       l = {
         name = "+[L]ists",
         b = { function() tele.builtin(require('telescope.themes').get_ivy({})) end, "Built-Ins" },
-        d = { function() tele.diagnostics(require('telescope.themes').get_cursor({})) end, "List Diagnostics for all open Buffers" }, --NOTE: this may belong somewhere else
+        d = { function() tele.diagnostics(require('telescope.themes').get_dropdown({})) end, "List Diagnostics for all open Buffers" }, --NOTE: this may belong somewhere else
         j = { function() tele.jumplist(require('telescope.themes').get_cursor({})) end, "Jumplist" },
-        l = {
-          name = "+[L]SP Stuff",
-          r = { function() tele.lsp_references(require('telescope.themes').get_cursor({})) end, "References" },
-          i = { function() tele.lsp_incoming_calls(require('telescope.themes').get_cursor({})) end, "Incoming Calls for word Under Cursor" },
-          o = { function() tele.lsp_outgoing_calls(require('telescope.themes').get_cursor({})) end, "Outgoing Calls for word Under Cursor" },
-          d = { function() tele.lsp_document_symbols(require('telescope.themes').get_cursor({})) end, "List Document Symbols in Current Buffer" },
-          w = { function() tele.lsp_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "List Document Symbols in Current Workspace" },
-          s = { function() tele.lsp_dynamic_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "Dynamically List LSP for all Workspace Symbols" },
-        },
         m = { function() tele.marks(require('telescope.themes').get_dropdown({})) end, "List Marks" },
         p = {
           name = "+[P]ickers",
           h = { function() tele.resume(require('telescope.themes').get_dropdown({})) end, "Results of Previous Picker" },
           N = { function() tele.pickers(require('telescope.themes').get_dropdown({})) end, "Previous Pickers" },
+        },
+
+        --TODO: Implement telescope window for lazy reload
+        L = {
+          name = "+[L]azy",
+          p = { function() require("activate").list_plugins() end, "Plugin Installer" },
+          r = {},
         },
 
         s = { function() tele.spell_suggest(require('telescope.themes').get_cursor({})) end, "Spelling Suggestions" },         -- r = { function() tele.reloader(require('telescope.themes').get_dropdown({})) end, "Lua Modules (reloader)" },  -- TODO: Figure out what is hijacking keybinds here
@@ -311,6 +391,11 @@ return {
         r = { function() require('trouble').open 'lsp_references' end, 'LSP Reference List' },
       },
 
+      T = {
+        name = '+[Treesitter]',
+
+      },
+
       u = {
         name = '+[U]I',
         n = { function() require('noice').cmd 'dismiss' end, 'Dismiss Notifications' },
@@ -319,11 +404,20 @@ return {
         t = { function() require('noice').cmd 'disable' end, 'Toggle Notifications' },
         E = { function() require('noice').cmd 'enable' end, 'Enable Noice' },
         s = { function() require('noice').cmd 'stats' end, 'Show Noice Debug Stats' },
-        h = { function() require('telescope').extensions.noice.noice(require('telescope.themes').get_dropdown({})) end,
-
-          'Open message history in telescope' },
-        u = { "<Cmd>UndotreeToggle<CR>", "Undotree" }, 
-      },
+        h = { function() require('telescope').extensions.noice.noice(require('telescope.themes').get_dropdown({})) end, 'Open message history in telescope' },
+        u = { "<Cmd>UndotreeToggle<CR>", "Undotree" },
+        c = { function()
+          local undercurl_on = true
+          local diagnostics = vim.diagnostic.get()
+          if undercurl_on then
+            vim.diagnostic.set(0, 0, diagnostics, { underline = false })
+            print('Undercurl OFF')
+          else
+            vim.diagnostic.set(0, 0, diagnostics, { underline = true })
+            print('Undercurl ON')
+          end
+          undercurl_on = not undercurl_on
+        end, "Under[C]url Toggle" } },
       v = {
         name = "+[V]im Locals",
         v = { function() tele.vim_options(require('telescope.themes').get_dropdown({})) end, "Vim Options" },
@@ -334,9 +428,13 @@ return {
         i = { function() tele.highlights(require('telescope.themes').get_dropdown({})) end, "Highlights" },
       },
 
-      w = {
-        name = "+[W]orkspace",
-      },
+      -- TODO: get these to open in a telescope window
+      -- w = {
+      --   name = "+[W]orkspace",
+      --   a = { function() vim.lsp.buf.add_workspace_folder end, "add folder" },
+      --   r = { function() vim.lsp.buf.remove_workspace_folder end, "remove folder" },
+      --   l = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, "list folders" },
+      -- },
       ["?"] = { function() tele.oldfiles() end, "Show Recent Files" },
       ["<space>"] = { function() tele.buffers() end, "Find Existing Buffers" },
       ["/"] = { function() tele.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({ winblend = 10, previewer = false })) end, "Search Current Buffer (Fuzzy)" },

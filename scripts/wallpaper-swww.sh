@@ -8,7 +8,7 @@ if [ "$selected" ]; then
 
     echo "Changing theme..."
 
-    ~/.local/bin/wal -q -i ~/wallpaper/$selected
+    /usr/bin/wal -q -i ~/wallpaper/$selected
 
     # ----------------------------------------------------- 
     # Get new theme
@@ -25,7 +25,7 @@ if [ "$selected" ]; then
     # ----------------------------------------------------- 
     # Set the new wallpaper
     # ----------------------------------------------------- 
-    ~/bin/swww img $wallpaper \
+    /usr/bin/swww img $wallpaper \
         --transition-bezier .43,1.19,1,.4 \
         --transition-fps=60 \
         --transition-type="random" \

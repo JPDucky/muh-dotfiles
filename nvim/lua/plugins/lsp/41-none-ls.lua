@@ -156,9 +156,9 @@ return {
             formatting.buf,
 
             -- php
-            -- diagnostics.php,
-            -- formatting.blade_formatter,
-            -- formatting.pint,
+            diagnostics.php,
+            formatting.blade_formatter,
+            formatting.pint,
 
             -- puppet
             -- diagnostics.puppet_lint,

@@ -1,21 +1,24 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-refactor",
-      "nvim-treesitter/nvim-treesitter-textobjects",
+      'nvim-treesitter/nvim-treesitter-refactor',
+      'nvim-treesitter/nvim-treesitter-textobjects',
       {
-        "nvim-treesitter/playground",
-        build = ":TSInstall query",
+        'nvim-treesitter/playground',
+        build = ':TSInstall query',
       },
-      "nvim-treesitter/nvim-treesitter-context",
+      'nvim-treesitter/nvim-treesitter-context',
       -- "nvim-treesitter/nvim-ts-rainbow2",
     },
     opts = {
-      ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html", "css", "java", "python", "go" },
+      ensure_installed = { 'c', 'lua', 'vim', 'vimdoc', 'query', 'elixir', 'heex', 'javascript', 'html', 'css', 'java', 'python', 'go' },
       sync_install = false,
-      highlight = { enable = true },
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = true,
+      },
       indent = { enable = true },
 
       refactor = {
@@ -29,7 +32,7 @@ return {
         smart_rename = {
           enable = true,
           keymaps = {
-            smart_rename = "crr",
+            smart_rename = 'crr',
           },
         },
 
@@ -37,11 +40,11 @@ return {
           enable = true,
           keymaps = {
             -- TODO: move these to keybinds file
-            goto_definition = "gnd",
-            list_definitions = "gnD",
-            list_definitions_toc = "gO",
-            goto_next_usage = "<a-*>",
-            goto_previous_usage = "<a-#>",
+            goto_definition = 'gd',
+            list_definitions = 'gD',
+            list_definitions_toc = 'gO',
+            goto_next_usage = '<a-*>',
+            goto_previous_usage = '<a-#>',
           },
         },
 
@@ -50,11 +53,11 @@ return {
             enable = true,
             lookahead = true,
             keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of class region" },
-              ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
+              ['af'] = '@function.outer',
+              ['if'] = '@function.inner',
+              ['ac'] = '@class.outer',
+              ['ic'] = { query = '@class.inner', desc = 'Select inner part of class region' },
+              ['as'] = { query = '@scope', query_group = 'locals', desc = 'Select language scope' },
             },
             -- You can choose the select mode (default is charwise 'v')
             --
@@ -99,7 +102,7 @@ return {
             query_linter = {
               enable = true,
               use_virtual_text = true,
-              lint_events = {"BufWrite", "CursorHold"},
+              lint_events = { 'BufWrite', 'CursorHold' },
             },
           },
           context = {
@@ -123,7 +126,7 @@ return {
           matchup = {
             enable = true,
             disable = { 'c', 'ruby' },
-          }
+          },
         },
       },
     },

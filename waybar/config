@@ -1,0 +1,78 @@
+[
+    {
+        // Top bar configuration
+        "layer": "top",
+        "output": "DP-1",
+        "position": "top",
+        "margin-top": 0,
+        "margin-bottom": 0,
+        "margin-left": 0,
+        "margin-right": 0,
+        "spacing": 0,
+        "include": [
+            "~/dotfiles/waybar/modules.json"
+        ],
+        "modules-left": [
+            "custom/appmenu",
+            "custom/settings",
+            "custom/waybarthemes",
+            "custom/wallpaper",
+            "group/quicklinks"
+        ],
+        "modules-center": [
+            "clock"
+        ],
+        "modules-right": [
+            "pulseaudio",
+            "bluetooth",
+            "network",
+            "group/hardware",
+            "custom/cliphist"
+        ]
+    },
+    {
+        // Bottom bar configuration
+        "layer": "top",
+        "output": "DP-1",
+        "position": "bottom",
+        "margin-top": 0,
+        "margin-bottom": 0,
+        "margin-left": 0,
+        "margin-right": 0,
+        "spacing": 0,
+        "include": [
+            "~/dotfiles/waybar/modules.json"
+        ],
+        "modules-left": [
+            "wlr/taskbar",
+            "hyprland/window"
+        ],
+        "modules-center": [
+            "hyprland/workspaces"
+        ],
+        "modules-right": [
+            "custom/updates",
+            "custom/exit"
+        ]
+    },
+    {
+        "layer": "top",
+         "output": [
+            "DP-3",
+            "HDMI-A-1"
+         ],
+         "position": "bottom",
+         "margin": 0,
+         "modules-left": [
+             "wlr/taskbar",
+             "hyprland/window"
+         ],
+         "modules-center": [
+             "clock"
+         ],
+         "modules-right": [
+             "hyprland/workspaces"
+         ]
+    }
+]
+

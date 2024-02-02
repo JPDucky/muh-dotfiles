@@ -44,12 +44,13 @@ done
 # Show rofi dialog
 # ----------------------------------------------------- 
 listNames=${listNames::-2}
-choice=$(echo -e "$listNames" | rofi -dmenu -config ~/dotfiles/rofi/config-wallpaper.rasi -no-show-icons -width 30 -p "Themes" -format i) 
+choice=$(echo -e "$listNames" | rofi -dmenu -i -replace -config ~/dotfiles/rofi/config-wallpaper.rasi -no-show-icons -width 30 -p "Themes" -format i) 
 
 # ----------------------------------------------------- 
 # Set new theme by writing the theme information to ~/.cache/.themestyle.sh
 # ----------------------------------------------------- 
 if [ "$choice" ]; then
+    echo "Loading waybar theme..."
     echo "${listThemes[$choice+1]}" > ~/.cache/.themestyle.sh
     ~/dotfiles/waybar/launch.sh
 fi
