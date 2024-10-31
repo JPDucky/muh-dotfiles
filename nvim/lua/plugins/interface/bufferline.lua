@@ -2,6 +2,10 @@ return {
   --TODO: add to editor-ui.lua
   {
     'akinsho/bufferline.nvim',
+    version = "*",
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
     event = "VeryLazy",
     -- these 'keys' are lazy loaded, as in the plugin isn't loaded until these keys are used
     keys = {

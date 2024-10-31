@@ -2,6 +2,7 @@ return {
   {
     'tools-life/taskwiki',
     lazy = false,
+    enabled = false,
     dependencies = {
       'powerman/vim-plugin-AnsiEsc',
       'majutsushi/tagbar',

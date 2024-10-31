@@ -9,6 +9,7 @@ return {
       'saadparwaiz1/cmp_luasnip',
       'L3MON4D3/LuaSnip',
       'rafamadriz/friendly-snippets',
+      'kristijanhusak/vim-dadbod-completion',
     },
 
     -- [[ Configure nvim-cmp ]]
@@ -20,8 +21,6 @@ return {
 
 
       cmp.setup {
-        revision = 1,
-        enabled = true,
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
@@ -62,6 +61,7 @@ return {
           { name = 'luasnip' },
           { name = "neorg" },
           { name = "path" },
+          { name = 'vim-dadbod-completion' },
           -- { name = 'cmp_tabnine' },
         },
       }

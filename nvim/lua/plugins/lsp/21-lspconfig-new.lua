@@ -1,0 +1,156 @@
+-- return {
+--   {
+--     {
+--       'williamboman/mason.nvim',
+--       config = function()
+--         require('mason').setup()
+--       end,
+--     },
+--
+--     {
+--       'williamboman/mason-lspconfig.nvim',
+--       config = function()
+--         require('mason-lspconfig').setup()
+--       end,
+--     },
+--     {
+--       'folke/neodev.nvim',
+--       opts = {},
+--     },
+--   },
+--
+--   {
+--     'neovim/nvim-lspconfig',
+--     event = { 'BufReadPre', 'BufNewFile' },
+--     dependencies = {
+--       { 'folke/neoconf.nvim', cmd = 'Neoconf', config = false, dependencies = { 'nvim-lspconfig' } },
+--       { 'folke/neodev.nvim' },
+--       { 'williamboman/mason.nvim' },
+--       { 'williamboman/mason-lspconfig.nvim' },
+--       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+--       {
+--         'creativenull/efmls-configs-nvim',
+--         version = 'v1.1.1',
+--         dependencies = { 'neovim/nvim-lspconfig' },
+--       },
+--     },
+--
+--     -- [[ Configure LSP ]]
+--     config = function()
+--       local function load_language_configs()
+--         local langs_dir = vim.fs.joinpath(vim.fn.stdpath('config'), 'lua', 'plugins', 'lsp', 'langs')
+--         local configs = {}
+--
+--         local dir_handle = vim.loop.fs_scandir(langs_dir)
+--         if dir_handle then
+--           while true do
+--             local file = vim.loop.fs_scandir_next(dir_handle)
+--             if not file then break end
+--
+--             if file:match '%.lua$' then
+--               local name = file:gsub('%.lua$', '')
+--               local module_path = 'plugins.lsp.langs.' .. name
+--               local config = require(module_path)
+--               configs[name] = config
+--             end
+--           end
+--         end
+--
+--         return configs
+--       end
+--
+--       local function on_attach(_, bufnr)
+--         local function nmap(keys, func, desc)
+--           if desc then desc = 'LSP: ' .. desc end
+--           vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+--         end
+--
+--         local mappings = {
+--           ['<space>ee'] = { vim.diagnostic.open_float, 'Show Diagnostic' },
+--           ['[d'] = { vim.diagnostic.goto_prev, 'Previous Diagnostic' },
+--           [']d'] = { vim.diagnostic.goto_next, 'Next Diagnostic' },
+--           ['<space>q'] = { vim.diagnostic.setloclist, 'Diagnostic List' },
+--           ['gD'] = { vim.lsp.buf.declaration, 'Goto Declaration' },
+--           ['gd'] = { vim.lsp.buf.definition, 'Goto Definition' },
+--           ['K'] = { vim.lsp.buf.hover, 'Hover Documentation' },
+--           ['gi'] = { vim.lsp.buf.implementation, 'Goto Implementation' },
+--           ['<C-k>'] = { vim.lsp.buf.signature_help, 'Signature Documentation' },
+--           ['<space>wa'] = { vim.lsp.buf.add_workspace_folder, 'Workspace Add Folder' },
+--           ['<space>wr'] = { vim.lsp.buf.remove_workspace_folder, 'Workspace Remove Folder' },
+--           ['<space>wl'] = {
+--             function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
+--             'Workspace List Folders'
+--           },
+--           ['<space>D'] = { vim.lsp.buf.type_definition, 'Type Definition' },
+--           ['<space>rn'] = { vim.lsp.buf.rename, 'Rename' },
+--           ['<space>ca'] = { vim.lsp.buf.code_action, 'Code Action' },
+--           ['gr'] = { vim.lsp.buf.references, 'References' },
+--           ['<space>ff'] = {
+--             function() vim.lsp.buf.format { async = true } end,
+--             'Format'
+--           }
+--         }
+--
+--         for key, map in pairs(mappings) do
+--           nmap(key, map[1], map[2])
+--         end
+--       end
+--
+--       local servers = load_language_configs()
+--
+--       require('neodev').setup {}
+--
+--       local lspconfig = require 'lspconfig'
+--       lspconfig.lua_ls.setup {
+--         settings = {
+--           Lua = {
+--             completion = { callSnippet = 'Replace' },
+--           },
+--         },
+--       }
+--
+--       local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+--
+--       local mason_lspconfig = require 'mason-lspconfig'
+--       mason_lspconfig.setup {
+--         ensure_installed = vim.tbl_keys(servers),
+--       }
+--
+--       mason_lspconfig.setup_handlers {
+--         function(server_name)
+--           lspconfig[server_name].setup {
+--             capabilities = capabilities,
+--             on_attach = on_attach,
+--             settings = servers[server_name],
+--             filetypes = (servers[server_name] or {}).filetypes,
+--           }
+--         end,
+--       }
+--
+--       require('nvim-treesitter.configs').setup {
+--         ensure_installed = vim.tbl_keys(servers),
+--       }
+--
+--       vim.diagnostic.config {
+--         virtual_text = true,
+--         signs = true,
+--         update_in_insert = false,
+--         underline = true,
+--         severity_sort = true,
+--         float = {
+--           focusable = false,
+--           style = 'minimal',
+--           border = 'rounded',
+--           source = 'always',
+--           header = '',
+--           prefix = '',
+--         },
+--       }
+--
+--       vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
+--       vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
+--     end,
+--   },
+-- }
+--
+return {}

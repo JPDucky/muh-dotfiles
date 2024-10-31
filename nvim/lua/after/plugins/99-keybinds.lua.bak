@@ -95,14 +95,14 @@ return {
       vim.o.timeoutlen = 30
     end,
     opts = {
-      -- window = {
-      --   border = "single",   -- none | single | double | shadow
-      --   position = "bottom", -- bottom | top
-      --   margin = { 1, 0, 1, 0 },
-      --   padding = { 1, 2, 1, 2 },
-      --   windblend = 0,
-      --   zindex = 1000,
-      -- },
+      window = {
+        border = "single",   -- none | single | double | shadow
+        position = "bottom", -- bottom | top
+        margin = { 1, 0, 1, 0 },
+        padding = { 1, 2, 1, 2 },
+        windblend = 0,
+        zindex = 1000,
+      },
       triggers = {
         { "<auto>", mode = "nixsotc" },
         { "a", mode = { "n", "v" } },

@@ -1,6 +1,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ','
 
+require("vimopts")
+
+-- defining path for lazy.nvim
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -12,26 +15,10 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   }
 end
+-- adding lazy.nvim to runtimepath
 vim.opt.rtp:prepend(lazypath)
 
-vim.g.netrw_keepdir = 0
 
-vim.opt.scrolloff = 14
-
-vim.opt.wrap = false
-
--- vim.g.netrw_banner = 0
--- vim.g.netrw_liststyle = 3
--- vim.g.netrw_browse_split = 4
--- vim.g.netrw_altv = 1
--- vim.g.netrw_winsize = 25
---
--- vim.cmd [[
---   augroup ProjectDrawer
---     autocmd!
---     autocmd VimEnter * :Vexplore
---   augroup END
--- ]]
 
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
@@ -41,15 +28,15 @@ vim.opt.wrap = false
 require('lazy').setup({
   -- NOTE: First, some plugins that don"t require any configuration
 
-  -- Git related plugins
+  -- NOTE: Git related plugins
+  -- NOTE: "if fugitive is the git, rhubarb is the hub" - tpope
   'tpope/vim-fugitive',
-  -- "if fugitive is the git, rhubarb is the hub" - tpope
   'tpope/vim-rhubarb',
 
-  -- Detect tabstop and shiftwidth automatically
+  -- NOTE: Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
-
   'folke/which-key.nvim',
+
 
   -- git signs
   {

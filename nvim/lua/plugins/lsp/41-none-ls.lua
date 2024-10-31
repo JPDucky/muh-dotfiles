@@ -1,5 +1,6 @@
 return {
   'nvimtools/none-ls.nvim',
+  enabled = false,
   dependencies = {
     { 'nvim-lua/plenary.nvim' },
     {
@@ -26,13 +27,13 @@ return {
             diagnostics.ansiblelint,
 
             -- aws
-            diagnostics.cfn_lint,
+            -- diagnostics.cfn_lint,
 
             -- bash/zsh/fish
-            code_actions.shellcheck,
-            diagnostics.shellcheck,
+            -- code_actions.shellcheck,
+            -- diagnostics.shellcheck,
             diagnostics.zsh,
-            formatting.beautysh,
+            -- formatting.beautysh,
             -- formatting.shellharden,
             -- formatting.shfmt,
 
@@ -46,14 +47,14 @@ return {
             diagnostics.hadolint,
 
             -- english
-            code_actions.proselint,
+            -- code_actions.proselint,
             -- completion.spell,
-            diagnostics.codespell,
-            diagnostics.misspell,
-            diagnostics.proselint,
-            diagnostics.textlint,
-            diagnostics.vale,
-            diagnostics.write_good,
+            -- diagnostics.codespell,
+            -- diagnostics.misspell,
+            -- diagnostics.proselint,
+            -- diagnostics.textlint,
+            -- diagnostics.vale,
+            -- diagnostics.write_good,
 
             -- .env files
             diagnostics.dotenv_linter,
@@ -72,22 +73,22 @@ return {
             -- formatting.golines,
 
             -- html/CSS
-            diagnostics.curlylint,
-            diagnostics.djlint,
+            -- diagnostics.curlylint,
+            -- diagnostics.djlint,
             -- diagnostics.erb_lint,
             -- diagnostics.stylelint,
             -- diagnostics.stylint,
             -- diagnostics.tidy,
             -- formatting.djhtml,
             -- formatting.djlint,
-            formatting.htmlbeautifier,
-            formatting.stylelint,
+            -- formatting.htmlbeautifier,
+            -- formatting.stylelint,
 
             -- javascript/typescript
-            code_actions.eslint,
+            -- code_actions.eslint,
             -- diagnostics.deno_lint,
-            diagnostics.eslint,
-            diagnostics.jshint,
+            -- diagnostics.eslint,
+            -- diagnostics.jshint,
             -- diagnostics.npm_groovy_lint,
             -- diagnostics.semistandardjs,
             -- diagnostics.standardjs,
@@ -96,7 +97,7 @@ return {
             -- formatting.biome,
             -- formatting.deno_fmt,
             -- formatting.docformatter,
-            formatting.eslint,
+            -- formatting.eslint,
             formatting.prettier,
             -- formatting.prismaFmt,
             -- formatting.semistandardjs,
@@ -104,7 +105,7 @@ return {
             -- formatting.standardts,
 
             -- json/yaml/toml
-            diagnostics.jsonlint,
+            -- diagnostics.jsonlint,
             -- diagnostics.spectral,
             -- diagnostics.yamllint,
             -- formatting.fixjson,
@@ -117,7 +118,7 @@ return {
             -- formatting.yamlfmt,
 
             -- latex
-            diagnostics.chktex,
+            -- diagnostics.chktex,
 
             -- lua
             completion.luasnip,
@@ -127,16 +128,16 @@ return {
             formatting.stylua,
 
             -- makefiles
-            diagnostics.checkmake,
-            diagnostics.cmake_lint,
+            -- diagnostics.checkmake,
+            -- diagnostics.cmake_lint,
 
             -- markup/markdown
-            diagnostics.markdownlint,
-            diagnostics.markuplint,
+            -- diagnostics.markdownlint,
+            -- diagnostics.markuplint,
             -- diagnostics.mdl,
             -- formatting.cbfmt,
-            formatting.markdownlint,
-            formatting.markdown_toc,
+            -- formatting.markdownlint,
+            -- formatting.markdown_toc,
             -- formatting.mdformat,
             -- formatting.remark,
 
@@ -148,17 +149,17 @@ return {
             -- formatting.nixpkgs_fmt,
 
             -- nginx
-            formatting.nginx_beautifier,
+            -- formatting.nginx_beautifier,
 
             -- protocol buffers
-            diagnostics.buf,
-            diagnostics.protolint,
-            formatting.buf,
+            -- diagnostics.buf,
+            -- diagnostics.protolint,
+            -- formatting.buf,
 
             -- php
-            diagnostics.php,
-            formatting.blade_formatter,
-            formatting.pint,
+            -- diagnostics.php,
+            -- formatting.blade_formatter,
+            -- formatting.pint,
 
             -- puppet
             -- diagnostics.puppet_lint,
@@ -187,13 +188,13 @@ return {
             -- formatting.yapf,
 
             -- rust
-            formatting.rustfmt,
+            -- formatting.rustfmt,
 
             -- sql
-            diagnostics.sqlfluff,
-            formatting.sqlfluff,
-            formatting.sqlfmt,
-            formatting.sql_formatter,
+            -- diagnostics.sqlfluff,
+            -- formatting.sqlfluff,
+            -- formatting.sqlfmt,
+            -- formatting.sql_formatter,
 
             -- terraform
             -- formatting.terrafmt,
@@ -210,10 +211,10 @@ return {
             -- diagnostics.ltrs,
             -- diagnostics.todo_comments,
             diagnostics.trail_space,
-            diagnostics.typos,
+            -- diagnostics.typos,
             formatting.textlint,
-            formatting.trim_newlines,
-            formatting.trim_whitespace,
+            -- formatting.trim_newlines,
+            -- formatting.trim_whitespace,
             -- hover.dictionary,
             -- hover.printenv,
 
