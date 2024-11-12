@@ -87,6 +87,51 @@ vim.o.timeout = true
 vim.o.timeoutlen = 550
 
 return {
+  -- lua with lazy.nvim
+  {
+    "max397574/better-escape.nvim",
+    config = function()
+      require("better_escape").setup {
+          timeout = 400,
+          default_mappings = true,
+          mappings = {
+              i = {
+                  j = {
+                      -- These can all also be functions
+                      j = "<Esc>",
+                  },
+                  k = {
+                      k = "<Esc>",
+                  },
+              },
+              c = {
+                  j = {
+                      -- These can all also be functions
+                      j = "<Esc>",
+                  },
+                  k = {
+                      k = "<Esc>",
+                  },
+              },
+              -- t = {
+              --     j = {
+              --         k = "<C-\\><C-n>",
+              --     },
+              -- },
+              -- v = {
+              --     j = {
+              --         k = "<Esc>",
+              --     },
+              -- },
+              s = {
+                  j = {
+                      k = "<Esc>",
+                  },
+              },
+          },
+      }
+    end,
+  },
   {
     'folke/which-key.nvim',
     event = "BufEnter",
@@ -191,7 +236,6 @@ return {
   --vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
   --vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
   --vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
-  vim.keymap.set( "i", "<A-i>", "<Cmd>FloatermToggle<CR>", { desc = 'Toggle Floaterm' }),
 
   -- quick yoink
   vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { desc = 'Yoink to System Clipboard' }),
@@ -253,224 +297,186 @@ return {
   --   })
   -- end)
 
-
   -- NOTE: which-key bindings
   -- All of these bindings are prefaced with the leader key, more to come
 
-  wk.register {
-    ['<leader>'] = {
-      a = {
-        name = '+[A]ctions',
-      },
+  wk.add {
+    { "<A-i>", "<Cmd>FloatermToggle<CR>", desc = "Float-Term Toggle", mode = { "n", "t" } },
+    -- Non-leader mappings
+    { "f", function() require('flash').treesitter() end, desc = "Flash Treesitter" },
 
-      b = {
-        name = '+[B]uffer',
-        d = "Delete Current Buff",           --lazy, see file
-        D = "Delete Current Buffer (Force)", -- lazy, see file
-        g = { bufferline.pick, "Select Buffer" },
-        c = { bufferline.close_with_pick, "Close Select Buffer" },
-      },
+    -- Go-To mappings
+    { "gB", function() tele.builtin {} end, desc = "GOTO Builtins" },
+    { "gd", function() tele.lsp_definitions {} end, desc = "GOTO Definition" },
+    { "gD", function() tele.lsp_type_definitions {} end, desc = "GOTO Type Definitions" },
+    { "gI", function() tele.lsp_implementations {} end, desc = "GOTO Implementation" },
+    { "gm", function() tele.marks {} end, desc = "GOTO Marks" },
+    { "gr", function() tele.lsp_references {} end, desc = "GOTO References" },
+    { "gT", function() tele.treesitter {} end, desc = "GOTO Treesitter" },
+    { "gl", function() tele.loclist {} end, desc = "GOTO Location List" },
+    { "gs", function() tele.symbols {} end, desc = "GOTO Symbols" },
 
-      c = {
-        name = '+[C]ode',
-        a = { vim.lsp.buf.code_action, "Action" },
-        t = { vim.lsp.buf.type_definition, "Type Definition" },
-      },
+    -- Leader mappings
+    { "<leader>/", function() 
+      tele.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({ winblend = 10, previewer = false }))
+    end, desc = "Search Current Buffer (Fuzzy)" },
+    { "<leader><space>", function() tele.buffers() end, desc = "Find Existing Buffers" },
+    { "<leader>?", function() tele.oldfiles() end, desc = "Show Recent Files" },
 
-      d = {
-        name = '+[D]ebug',
-        d = { dapui.toggle, 'DAP UI Toggle' },
-        f = { dap.continue, 'Debug: Start/Continue' },
-        i = { dap.step_into, 'Debug: Step Into' },
-        o = { dap.step_over, 'Debug: Step Over' },
-        O = { dap.step_out, 'Debug: Step Out' },
-        t = { dap.toggle_breakpoint, 'Debug: Toggle Breakpoint' },
-        b = { function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, 'Debug: Set Breakpoint' },
-      },
+    -- Actions group
+    { "<leader>a", name = "[A]ctions" },
 
+    -- Buffer group
+    { "<leader>b", name = "[B]uffer" },
+    { "<leader>bd", desc = "Delete Current Buffer" },
+    { "<leader>bD", desc = "Delete Current Buffer (Force)" },
+    { "<leader>bg", function() bufferline.pick() end, desc = "Select Buffer" },
+    { "<leader>bc", function() bufferline.close_with_pick() end, desc = "Close Select Buffer" },
 
-      e = {
-        name = "+[E]ditor",
-        c = { function() tele.colorscheme {} end, "Select colorscheme" }
-      },
+    -- Code group
+    { "<leader>c", name = "[C]ode" },
+    { "<leader>ca", function() vim.lsp.buf.code_action() end, desc = "Action" },
+    { "<leader>ct", function() vim.lsp.buf.type_definition() end, desc = "Type Definition" },
 
-      f = {
-        name = '+[F]ile',
-        s = { '<Cmd>w<CR><Esc>', 'File Save' },
-        r = { function() tele.oldfiles() end, "Show Recent Files" },
-        -- f = { function() vim.lsp.buf.format({ async = true }) end, "Format File" },
-      },
+    -- Debug group
+    { "<leader>d", name = "[D]ebug" },
+    { "<leader>dd", function() dapui.toggle() end, desc = "DAP UI Toggle" },
+    { "<leader>df", function() dap.continue() end, desc = "Debug: Start/Continue" },
+    { "<leader>di", function() dap.step_into() end, desc = "Debug: Step Into" },
+    { "<leader>do", function() dap.step_over() end, desc = "Debug: Step Over" },
+    { "<leader>dO", function() dap.step_out() end, desc = "Debug: Step Out" },
+    { "<leader>dt", function() dap.toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint" },
+    { "<leader>db", function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Debug: Set Breakpoint" },
 
-      g = {
-        name = "+[g]rep/[g]oto",
-        S = { function() tele.grep_string {} end, 'Grep String' }, -- TODO: add to visual mode
-        c = { function() tele.current_buffer_fuzzy_find(require('telescope.themes').get_cursor({})) end, "Current Buffer" },
-        f = { function() tele.find_files(require('telescope.themes').get_dropdown({})) end, 'Grep file' },
-        p = { function() tele.planets(require('telescope.themes').get_dropdown({})) end, "Search the planets..." },
-        s = { function() tele.live_grep(require('telescope.themes').get_dropdown({})) end, 'Live Grep' },
-        l = {
-          name = "+[L]SP Stuff",
-          r = { function() tele.lsp_references(require('telescope.themes').get_cursor({})) end, "References" },
-          i = { function() tele.lsp_incoming_calls(require('telescope.themes').get_cursor({})) end, "Incoming Calls for word Under Cursor" },
-          o = { function() tele.lsp_outgoing_calls(require('telescope.themes').get_cursor({})) end, "Outgoing Calls for word Under Cursor" },
-          d = { function() tele.lsp_document_symbols(require('telescope.themes').get_cursor({})) end, "List Document Symbols in Current Buffer" },
-          w = { function() tele.lsp_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "List Document Symbols in Current Workspace" },
-          s = { function() tele.lsp_dynamic_workspace_symbols(require('telescope.themes').get_dropdown({})) end, "Dynamically List LSP for all Workspace Symbols" },
-        },
-      },
+    -- Editor group
+    { "<leader>e", name = "[E]ditor" },
+    { "<leader>ec", function() tele.colorscheme {} end, desc = "Select colorscheme" },
 
-      --NOTE: Any of the telescope functions can have its theme changed to get_dropdown | get_cursor | get_ivy
-      G = {
-        name = "+[G]it",
-        -- c = { function() tele.git_commits(require('telescope.themes').get_dropdown({})) end, "Commits"},
-        o = { function() tele.git_bcommits(require('telescope.themes').get_dropdown({})) end, "Buffer's Commits" },
-        b = { function() tele.git_branches(require('telescope.themes').get_dropdown({})) end, "Branches w/ Log Preview" },
-        s = { function() tele.git_status(require('telescope.themes').get_dropdown({})) end, "Show Current Changes" },
-        h = { function() tele.git_stash(require('telescope.themes').get_dropdown({})) end, "Show Stash Items in Current Repo" },
-        f = { function() tele.git_files(require('telescope.themes').get_dropdown({})) end, "Grep git files" },
-      },
+    -- File group
+    { "<leader>f", name = "[F]ile" },
+    { "<leader>fs", "<Cmd>w<CR><Esc>", desc = "File Save" },
+    { "<leader>fr", function() tele.oldfiles() end, desc = "Show Recent Files" },
 
-      h = {
-        name = "+[H]elp",
-        h = { function() tele.help_tags {} end, "Search Help Files" },
-        c = { function() tele.commands {} end, "List Available Plugin/User Commands" },
-        k = { "<Cmd>Hawtkeys<CR>", "Hawtkeys search" },
-      },
+    -- Grep/Goto group and LSP subgroup
+    { "<leader>g", name = "[g]rep/[g]oto" },
+    { "<leader>gS", function() tele.grep_string {} end, desc = "Grep String" },
+    { "<leader>gc", function() tele.current_buffer_fuzzy_find(require('telescope.themes').get_cursor({})) end, desc = "Current Buffer" },
+    { "<leader>gf", function() tele.find_files(require('telescope.themes').get_dropdown({})) end, desc = "Grep file" },
+    { "<leader>gp", function() tele.planets(require('telescope.themes').get_dropdown({})) end, desc = "Search the planets..." },
+    { "<leader>gs", function() tele.live_grep(require('telescope.themes').get_dropdown({})) end, desc = "Live Grep" },
 
-      l = {
-        name = "+[L]ists",
-        b = { function() tele.builtin(require('telescope.themes').get_ivy({})) end, "Built-Ins" },
-        d = { function() tele.diagnostics(require('telescope.themes').get_dropdown({})) end, "List Diagnostics for all open Buffers" }, --NOTE: this may belong somewhere else
-        j = { function() tele.jumplist(require('telescope.themes').get_cursor({})) end, "Jumplist" },
-        m = { function() tele.marks(require('telescope.themes').get_dropdown({})) end, "List Marks" },
-        p = {
-          name = "+[P]ickers",
-          h = { function() tele.resume(require('telescope.themes').get_dropdown({})) end, "Results of Previous Picker" },
-          N = { function() tele.pickers(require('telescope.themes').get_dropdown({})) end, "Previous Pickers" },
-        },
+    -- LSP Stuff subgroup
+    { "<leader>gl", name = "[L]SP Stuff" },
+    { "<leader>glr", function() tele.lsp_references(require('telescope.themes').get_cursor({})) end, desc = "References" },
+    { "<leader>gli", function() tele.lsp_incoming_calls(require('telescope.themes').get_cursor({})) end, desc = "Incoming Calls for word Under Cursor" },
+    { "<leader>glo", function() tele.lsp_outgoing_calls(require('telescope.themes').get_cursor({})) end, desc = "Outgoing Calls for word Under Cursor" },
+    { "<leader>gld", function() tele.lsp_document_symbols(require('telescope.themes').get_cursor({})) end, desc = "List Document Symbols in Current Buffer" },
+    { "<leader>glw", function() tele.lsp_workspace_symbols(require('telescope.themes').get_dropdown({})) end, desc = "List Document Symbols in Current Workspace" },
+    { "<leader>gls", function() tele.lsp_dynamic_workspace_symbols(require('telescope.themes').get_dropdown({})) end, desc = "Dynamically List LSP for all Workspace Symbols" },
 
-        --TODO: Implement telescope window for lazy reload
-        L = {
-          name = "+[L]azy",
-          p = { function() require("activate").list_plugins() end, "Plugin Installer" },
-          r = {},
-        },
+    -- Git group
+    { "<leader>G", name = "[G]it" },
+    { "<leader>Go", function() tele.git_bcommits(require('telescope.themes').get_dropdown({})) end, desc = "Buffer's Commits" },
+    { "<leader>Gb", function() tele.git_branches(require('telescope.themes').get_dropdown({})) end, desc = "Branches w/ Log Preview" },
+    { "<leader>Gs", function() tele.git_status(require('telescope.themes').get_dropdown({})) end, desc = "Show Current Changes" },
+    { "<leader>Gh", function() tele.git_stash(require('telescope.themes').get_dropdown({})) end, desc = "Show Stash Items in Current Repo" },
+    { "<leader>Gf", function() tele.git_files(require('telescope.themes').get_dropdown({})) end, desc = "Grep git files" },
 
-        s = { function() tele.spell_suggest(require('telescope.themes').get_cursor({})) end, "Spelling Suggestions" },         -- r = { function() tele.reloader(require('telescope.themes').get_dropdown({})) end, "Lua Modules (reloader)" },  -- TODO: Figure out what is hijacking keybinds here
-        tb = { function() tele.current_buffer_tags(require('telescope.themes').get_dropdown({})) end, "Current Buffer Tags" }, --TODO: find new home
-        tt = { function() tele.treesitter(require('telescope.themes').get_dropdown({})) end, "Treesitter Functions & Variables" },
-        z = { function() tele.symbols {} end, "Symbols" },
-        w = {
-          name = "+[W]orkspace",
-          a = { vim.lsp.buf.add_workspace_folder, "Add Folder to workspace" },
-          r = { vim.lsp.buf.remove_workspace_folder, "Remove Folder to workspace" },
-          l = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'Workspace List Folders' },
-          p = { function() require('telescope').extensions.project.project { display_type = 'full' } end, "Project Interface" },
-        },
-      },
+    -- Help group
+    { "<leader>h", name = "[H]elp" },
+    { "<leader>hh", function() tele.help_tags {} end, desc = "Search Help Files" },
+    { "<leader>hc", function() tele.commands {} end, desc = "List Available Plugin/User Commands" },
+    { "<leader>hk", "<Cmd>Hawtkeys<CR>", desc = "Hawtkeys search" },
 
-      p = {
-        name = '+[P]ersonal',
-      },
+    -- Lists group
+    { "<leader>l", name = "[L]ists" },
+    { "<leader>lb", function() tele.builtin(require('telescope.themes').get_ivy({})) end, desc = "Built-Ins" },
+    { "<leader>ld", function() tele.diagnostics(require('telescope.themes').get_dropdown({})) end, desc = "List Diagnostics for all open Buffers" },
+    { "<leader>lj", function() tele.jumplist(require('telescope.themes').get_cursor({})) end, desc = "Jumplist" },
+    { "<leader>lm", function() tele.marks(require('telescope.themes').get_dropdown({})) end, desc = "List Marks" },
 
-      q = {
-        name = '+[Q]uickfix',
-        q = { function() tele.quickfix(require('telescope.themes').get_dropdown({})) end, "Quickfix" },
-        h = { function() tele.quickfixhistory(require('telescope.themes').get_dropdown({})) end, "Quickfix History" },
-        l = { function() tele.loclist(require('telescope.themes').get_dropdown({})) end, "Current Window Location List" },
-      },
+    -- Pickers subgroup
+    { "<leader>lp", name = "[P]ickers" },
+    { "<leader>lph", function() tele.resume(require('telescope.themes').get_dropdown({})) end, desc = "Results of Previous Picker" },
+    { "<leader>lpN", function() tele.pickers(require('telescope.themes').get_dropdown({})) end, desc = "Previous Pickers" },
 
-      r = {
-        n = { vim.lsp.buf.rename, "rename" },
-      },
+    -- Lazy subgroup
+    { "<leader>lL", name = "[L]azy" },
+    { "<leader>lLp", function() require("activate").list_plugins() end, desc = "Plugin Installer" },
 
-      t = {
-        name = '+[T]rouble/TODO',
-        n = { function() require('todo-comments').jump_next() end, 'Next TODO' },
-        N = { function() require('todo-comments').jump_prev() end, 'Previous TODO' },
-        T = { '<Cmd>TodoTrouble<CR>', "TodoTrouble" },
-        L = { '<Cmd>TodoTelescope<CR>', "TodoTelescope" },
-        t = { function() require("trouble").open() end, "Open Trouble" },
-        w = { function() require('trouble').open 'workspace_diagnostics' end, 'Workspace Diagnostics' },
-        d = { function() require('trouble').open 'document_diagnostics' end, 'Document Diagnostics' },
-        q = { function() require('trouble').open 'quickfix' end, 'Quickfix' },
-        l = { function() require('trouble').open 'loclist' end, 'Location List' },
-        r = { function() require('trouble').open 'lsp_references' end, 'LSP Reference List' },
-      },
+    -- Additional Lists subgroups
+    { "<leader>ls", function() tele.spell_suggest(require('telescope.themes').get_cursor({})) end, desc = "Spelling Suggestions" },
+    { "<leader>ltb", function() tele.current_buffer_tags(require('telescope.themes').get_dropdown({})) end, desc = "Current Buffer Tags" },
+    { "<leader>ltt", function() tele.treesitter(require('telescope.themes').get_dropdown({})) end, desc = "Treesitter Functions & Variables" },
+    { "<leader>lz", function() tele.symbols {} end, desc = "Symbols" },
 
-      T = {
-        name = '+[T]oggle',
-        c = { function() require("obsidian").util.toggle_checkbox() end, "Toggle Checkbox"},
-      },
+    -- Workspace subgroup
+    { "<leader>lw", name = "[W]orkspace" },
+    { "<leader>lwa", function() vim.lsp.buf.add_workspace_folder() end, desc = "Add Folder to workspace" },
+    { "<leader>lwr", function() vim.lsp.buf.remove_workspace_folder() end, desc = "Remove Folder to workspace" },
+    { "<leader>lwl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, desc = "Workspace List Folders" },
+    { "<leader>lwp", function() require('telescope').extensions.project.project { display_type = 'full' } end, desc = "Project Interface" },
 
-      u = {
-        name = '+[U]I',
-        n = { function() require('noice').cmd 'dismiss' end, 'Dismiss Notifications' },
-        e = { function() require('noice').cmd 'errors' end, 'Show errors' },
-        l = { function() require('noice').cmd 'last' end, 'Show last popup' },
-        t = { function() require('noice').cmd 'disable' end, 'Toggle Notifications' },
-        E = { function() require('noice').cmd 'enable' end, 'Enable Noice' },
-        s = { function() require('noice').cmd 'stats' end, 'Show Noice Debug Stats' },
-        h = { function() require('telescope').extensions.noice.noice(require('telescope.themes').get_dropdown({})) end, 'Open message history in telescope' },
-        u = { "<Cmd>UndotreeToggle<CR>", "Undotree" },
-        c = { function()
-          local undercurl_on = true
-          local diagnostics = vim.diagnostic.get()
-          if undercurl_on then
-            vim.diagnostic.set(0, 0, diagnostics, { underline = false })
-            print('Undercurl OFF')
-          else
-            vim.diagnostic.set(0, 0, diagnostics, { underline = true })
-            print('Undercurl ON')
-          end
-          undercurl_on = not undercurl_on
-        end, "Under[C]url Toggle" } },
-      v = {
-        name = "+[V]im Locals",
-        o = { function() tele.vim_options(require('telescope.themes').get_dropdown({})) end, "Vim Options" },
-        r = { function() tele.registers(require('telescope.themes').get_ivy({})) end, "Registers" },
-        a = { function() tele.autocommands(require('telescope.themes').get_ivy({})) end, "Autocommands" },
-        k = { function() tele.keymaps(require('telescope.themes').get_ivy({})) end, "Keymaps" },
-        f = { function() tele.filetypes(require('telescope.themes').get_dropdown({})) end, "Filetypes" },
-        h = { function() tele.highlights(require('telescope.themes').get_dropdown({})) end, "Highlights" },
-      },
+    -- Personal group
+    { "<leader>p", name = "[P]ersonal" },
 
-      -- TODO: get these to open in a telescope window
-      -- w = {
-      --   name = "+[W]orkspace",
-      --   a = { function() vim.lsp.buf.add_workspace_folder end, "add folder" },
-      --   r = { function() vim.lsp.buf.remove_workspace_folder end, "remove folder" },
-      --   l = { function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, "list folders" },
-      -- },
-      ["?"] = { function() tele.oldfiles() end, "Show Recent Files" },
-      ["<space>"] = { function() tele.buffers() end, "Find Existing Buffers" },
-      ["/"] = { function() tele.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({ winblend = 10, previewer = false })) end, "Search Current Buffer (Fuzzy)" },
-      --end leader setup
-    },
+    -- Quickfix group
+    { "<leader>q", name = "[Q]uickfix" },
+    { "<leader>qq", function() tele.quickfix(require('telescope.themes').get_dropdown({})) end, desc = "Quickfix" },
+    { "<leader>qh", function() tele.quickfixhistory(require('telescope.themes').get_dropdown({})) end, desc = "Quickfix History" },
+    { "<leader>ql", function() tele.loclist(require('telescope.themes').get_dropdown({})) end, desc = "Current Window Location List" },
 
-    ['<A-i>'] = { "<Cmd>FloatermToggle<CR>", "Float-Term Toggle" },
-    -- TODO: figure out what to do with these for window hopping easily
-    -- ["<C-h>"] = { '<C-w>h' },
-    -- ["<C-j>"] = { '<C-w>j' },
-    -- ["<C-k>"] = { '<C-w>k' },
-    -- ["<C-l>"] = { '<C-w>l' },
+    -- Rename
+    { "<leader>rn", function() vim.lsp.buf.rename() end, desc = "rename" },
 
-    --  NOTE: here are the leader-less keybinds
-    [""] = {
-      g = {
-        name = '+[G]o-To',
-        B = { function() tele.builtin {} end, 'GOTO Builtins'},
-        d = { function() tele.lsp_definitions {} end, "GOTO Definition" },
-        D = { function() tele.lsp_type_definitions {} end, 'GOTO Type Definitions'},
-        I = { function() tele.lsp_implementations {} end, 'GOTO Implementation'},
-        m = { function() tele.marks {} end, 'GOTO Marks'},
-        r = { function() tele.lsp_references {} end, 'GOTO References'},
-        T = { function() tele.treesitter {} end, 'GOTO Treesitter'},
-        l = { function() tele.loclist {} end, 'GOTO Location List'},
-        s = { function() tele.symbols {} end, 'GOTO Symbols'},
+    -- Trouble/TODO group
+    { "<leader>t", name = "[T]rouble/TODO" },
+    { "<leader>tn", function() require('todo-comments').jump_next() end, desc = "Next TODO" },
+    { "<leader>tN", function() require('todo-comments').jump_prev() end, desc = "Previous TODO" },
+    { "<leader>tT", "<Cmd>TodoTrouble<CR>", desc = "TodoTrouble" },
+    { "<leader>tL", "<Cmd>TodoTelescope<CR>", desc = "TodoTelescope" },
+    { "<leader>tt", function() require("trouble").open() end, desc = "Open Trouble" },
+    { "<leader>tw", function() require('trouble').open('workspace_diagnostics') end, desc = "Workspace Diagnostics" },
+    { "<leader>td", function() require('trouble').open('document_diagnostics') end, desc = "Document Diagnostics" },
+    { "<leader>tq", function() require('trouble').open('quickfix') end, desc = "Quickfix" },
+    { "<leader>tl", function() require('trouble').open('loclist') end, desc = "Location List" },
+    { "<leader>tr", function() require('trouble').open('lsp_references') end, desc = "LSP Reference List" },
 
-      },
-      f = { function() require('flash').treesitter() end, "Flash Treesitter" },
-    }
+    -- Toggle group
+    { "<leader>T", name = "[T]oggle" },
+    { "<leader>Tc", function() require("obsidian").util.toggle_checkbox() end, desc = "Toggle Checkbox" },
+
+    -- UI group
+    { "<leader>u", name = "[U]I" },
+    { "<leader>un", function() require('noice').cmd('dismiss') end, desc = "Dismiss Notifications" },
+    { "<leader>ue", function() require('noice').cmd('errors') end, desc = "Show errors" },
+    { "<leader>ul", function() require('noice').cmd('last') end, desc = "Show last popup" },
+    { "<leader>ut", function() require('noice').cmd('disable') end, desc = "Toggle Notifications" },
+    { "<leader>uE", function() require('noice').cmd('enable') end, desc = "Enable Noice" },
+    { "<leader>us", function() require('noice').cmd('stats') end, desc = "Show Noice Debug Stats" },
+    { "<leader>uh", function() require('telescope').extensions.noice.noice(require('telescope.themes').get_dropdown({})) end, desc = "Open message history in telescope" },
+    { "<leader>uu", "<Cmd>UndotreeToggle<CR>", desc = "Undotree" },
+    { "<leader>uc", function()
+      local undercurl_on = true
+      local diagnostics = vim.diagnostic.get()
+      if undercurl_on then
+        vim.diagnostic.set(0, 0, diagnostics, { underline = false })
+        print('Undercurl OFF')
+      else
+        vim.diagnostic.set(0, 0, diagnostics, { underline = true })
+        print('Undercurl ON')
+      end
+      undercurl_on = not undercurl_on
+    end, desc = "Under[C]url Toggle" },
+
+    -- Vim Locals group
+    { "<leader>v", name = "[V]im Locals" },
+    { "<leader>vo", function() tele.vim_options(require('telescope.themes').get_dropdown({})) end, desc = "Vim Options" },
+    { "<leader>vr", function() tele.registers(require('telescope.themes').get_ivy({})) end, desc = "Registers" },
+    { "<leader>va", function() tele.autocommands(require('telescope.themes').get_ivy({})) end, desc = "Autocommands" },
+    { "<leader>vk", function() tele.keymaps(require('telescope.themes').get_ivy({})) end, desc = "Keymaps" },
+    { "<leader>vf", function() tele.filetypes(require('telescope.themes').get_dropdown({})) end, desc = "Filetypes" },
+    { "<leader>vh", function() tele.highlights(require('telescope.themes').get_dropdown({})) end, desc = "Highlights" },
+
   }
 }
