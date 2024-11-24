@@ -1,0 +1,608 @@
+return {
+  LSP and related plugins
+  'neovim/nvim-lspconfig',
+  event = { 'BufReadPre', 'BufNewFile' },
+  dependencies = {
+    { 'williamboman/mason.nvim', config = true },
+    { 'williamboman/mason-lspconfig.nvim', config = true },
+    { 'folke/neodev.nvim', opts = {} },
+    { 'folke/neoconf.nvim', cmd = 'Neoconf', config = false, dependencies = { 'nvim-lspconfig' } },
+    { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+    { 'creativenull/efmls-configs-nvim', version = 'v1.1.1', dependencies = { 'nvim-lspconfig' } },
+  },
+  config = function()
+    --  This function gets run when an LSP connects to a particular buffer.
+    local on_attach = function(_, bufnr)
+      local nmap = function(keys, func, desc)
+        if desc then
+          desc = 'LSP: ' .. desc
+        end
+
+        vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+      end
+
+      -- TODO: rootdirfunc
+      -- root_dir = function(fname)
+      --   return require('lspconfig').util.root_pattern('.git')(fname) or vim.loop.os_homedir()
+      -- end,
+      -- local eslint = require('efmls-configs.linters.eslint')
+      -- local prettier = require('efmls-configs.formatters.prettier')
+      -- local stylua = require("efmls-configs.formatters.stylua")
+      --
+      -- local languages = {
+      --   typescript = { eslint, prettier },
+      --   lua = { stylua },
+      -- }
+      --
+      -- local efmls_config = {
+      --   filetypes = vim.tbl_keys(languages),
+      --   settings = {
+      --     rootMarkers = { '.git/' },
+      --     languages = languages,
+      --   },
+      --   init_options = {
+      --     documentFormatting = true,
+      --     documentRangeFormatting = true,
+      --   },
+      -- }
+      -- TODO: make these work using the autocommand added to which-key file
+      vim.keymap.set('n', '<space>ee', vim.diagnostic.open_float)
+      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
+      vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
+      vim.keymap.set('n', '<space>qqq', vim.diagnostic.setloclist)
+
+      -- Use LspAttach autocommand to only map the following keys
+      -- after the language server attaches to the current buffer
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+        callback = function(ev)
+          -- Enable completion triggered by <c-x><c-o>
+          vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+          -- Buffer local mappings.
+          -- See `:help vim.lsp.*` for documentation on any of the below functions
+          local opts = { buffer = ev.buf }
+          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+          vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+          vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+          vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+          vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+          vim.keymap.set('n', '<space>wl', function()
+            print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+          end, opts)
+          vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
+          vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
+          vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
+          vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+          vim.keymap.set('n', '<space>ff', function()
+            vim.lsp.buf.format { async = true }
+          end, opts)
+        end,
+      })
+
+      --TODO: move these to keymaps file
+      nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+      nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+
+      -- nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+      -- nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+      -- nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+      nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
+      nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+      nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+
+      -- See `:help K` for why this keymap
+      nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
+      nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+
+      -- Lesser used LSP functionality
+      nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+      nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
+      nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+      nmap('<leader>wl', function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+      end, '[W]orkspace [L]ist Folders')
+
+      -- Create a command `:Format` local to the LSP buffer
+      vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+        vim.lsp.buf.format()
+      end, { desc = 'Format current buffer with LSP' })
+    end
+    -- end on_attach autocmd
+
+    local servers = {
+      -- Python LSP settings
+      pylsp = {
+        configurationSources = { "flake8" },
+        plugins = {
+          autopep8 = { enabled = true },
+          flake8 = { enabled = true, ignore = {"E302", "E501"} },
+          jedi_completion = {
+            enabled = true,
+            include_params = true,
+            include_class_objects = true,
+            include_function_objects = true,
+            fuzzy = true,
+            eager = true,
+            resolve_at_most = 25,
+            cache_for = {""},
+          },
+          jedi_definition = {
+            enabled = true,
+            follow_imports = true,
+            follow_builtin_imports = true,
+            follow_builtin_defintions = true,
+          },
+          jedi_hover = { enabled = true },
+          jedi_references = { enabled = true },
+          jedi_signature_help = { enabled = true },
+          jedi_symbols = {
+            enabled = true,
+            all_scopes = true,
+            include_import_symbols = true,
+          },
+          mccabe = { enabled = true, threshold = 15 },
+          preload = { enabled = true },
+          pycodestyle = { enabled = false, ignore = {"W293", "E111"} },
+          pydocstyle = { enabled = true, convention = "pep257", match = "(?!test_).*\\.py", matchDir = "[^\\.].*" },
+          pyflakes = { enabled = false },
+          pylint = { enabled = false },
+          yapf = { enabled = false },
+        },
+      },
+      rust_analyzer = {
+        settings = {
+          ["rust-analyzer"] = {
+            cargo = {
+              allFeatures = true,
+            },
+            checkOnSave = {
+              command = "clippy",
+            },
+          },
+        },
+      },
+      lua_ls = {
+        Lua = {
+          runtime = {
+            version = 'LuaJIT',
+            path = vim.split(package.path, ';'),
+          },
+          diagnostics = {
+            globals = {'vim', 'use'},
+            disable = {"lowercase-global", "undefined-global"},
+          },
+          workspace = {
+            library = {
+              [vim.fn.expand('$VIMRUNTIME/lua')] = true,
+              [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
+            },
+            maxPreload = 1000,
+            preloadFileSize = 1000,
+            checkThirdParty = true,
+          },
+          telemetry = { enable = false },
+          completion = {
+            callSnippet = "Replace",
+            keywordSnippet = 'Disable',
+            showWord = true,
+            displayContext = 5,
+            preferred = true,
+            autoRequire = true,
+          },
+          hint = {
+            enabled = true,
+          },
+          format = {
+            enable = true,
+            defaultConfig = {
+              indent_style = "space",
+              indent_size = "2",
+              continuation_indent_size = "2",
+            },
+          },
+        },
+      },
+      -- Add other language server configurations here
+    }
+
+    -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
+    -- Ensure the servers above are installed
+    local mason_lspconfig = require 'mason-lspconfig'
+
+    mason_lspconfig.setup {
+      ensure_installed = vim.tbl_keys(servers),
+    }
+
+    mason_lspconfig.setup_handlers {
+      function(server_name)
+        require('lspconfig')[server_name].setup {
+          capabilities = capabilities,
+          on_attach = on_attach,
+          settings = servers[server_name],
+          filetypes = (servers[server_name] or {}).filetypes,
+        }
+      end,
+    }
+
+    local ts_config = require 'nvim-treesitter.configs'
+
+    ts_config.setup {
+      ensure_installed = { "lua", "python", "javascript", "typescript", "html", "css" }, -- Add only valid languages here
+    }
+
+    vim.diagnostic.config {
+      virtual_text = true,
+      signs = { active = signs },
+      update_in_insert = false,
+      underline = true,
+      severity_sort = true,
+      float = {
+        focusable = false,
+        style = 'minimal',
+        border = 'rounded',
+        source = 'always',
+        header = '',
+        prefix = '',
+      },
+    }
+
+    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
+    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help,
+      { border = 'rounded' })
+  end,
+
+  -- nvim-cmp and related plugins
+  'hrsh7th/nvim-cmp',
+  dependencies = {
+    'hrsh7th/cmp-buffer',
+    'hrsh7th/cmp-cmdline',
+    'hrsh7th/cmp-nvim-lsp',
+    'hrsh7th/cmp-path',
+    'saadparwaiz1/cmp_luasnip',
+    'L3MON4D3/LuaSnip',
+    'rafamadriz/friendly-snippets',
+    'kristijanhusak/vim-dadbod-completion',
+  },
+  config = function()
+    local cmp = require 'cmp'
+    local luasnip = require 'luasnip'
+    require('luasnip.loaders.from_vscode').lazy_load()
+    luasnip.config.setup {}
+
+
+    cmp.setup {
+      snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+      },
+      -- TODO: get these keybinds into keybinds.lua
+      mapping = cmp.mapping.preset.insert {
+        ['<C-n>'] = cmp.mapping.select_next_item(),
+        ['<C-p>'] = cmp.mapping.select_prev_item(),
+        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete {},
+        ['<CR>'] = cmp.mapping.confirm {
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = true,
+        },
+        ['<Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif luasnip.expand_or_locally_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.locally_jumpable(-1) then
+            luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+        },
+        sources = {
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' },
+          { name = "neorg" },
+          { name = "path" },
+          { name = 'vim-dadbod-completion' },
+          -- { name = 'cmp_tabnine' },
+        },
+      }
+    end,
+
+  -- null-ls and related plugins
+  'nvimtools/none-ls.nvim',
+  enabled = true,
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    {
+      'jay-babu/mason-null-ls.nvim',
+      event = { "BufReadPre", "BufNewFile" },
+      dependencies = {
+        "williamboman/mason.nvim",
+        "nvimtools/none-ls.nvim"
+      },
+      config = function()
+        local null_ls = require('null-ls')
+        local code_actions = null_ls.builtins.code_actions
+        local diagnostics = null_ls.builtins.diagnostics
+        local formatting = null_ls.builtins.formatting
+        local hover = null_ls.builtins.hover
+        local completion = null_ls.builtins.completion
+
+        require('null-ls').setup({
+          sources = {
+
+            -- ansible
+            diagnostics.ansiblelint,
+
+            -- aws
+            -- diagnostics.cfn_lint,
+
+            -- bash/zsh/fish
+            -- code_actions.shellcheck,
+            -- diagnostics.shellcheck,
+            diagnostics.zsh,
+            -- formatting.beautysh,
+            -- formatting.shellharden,
+            -- formatting.shfmt,
+
+            -- c/cpp/c#
+            -- diagnostics.cppcheck,
+            -- diagnostics.cpplint,
+            -- formatting.astyle,
+            -- formatting.uncrustify,
+
+            -- docker
+            diagnostics.hadolint,
+
+            -- english
+            -- code_actions.proselint,
+            -- completion.spell,
+            -- diagnostics.codespell,
+            -- diagnostics.misspell,
+            -- diagnostics.proselint,
+            -- diagnostics.textlint,
+            -- diagnostics.vale,
+            -- diagnostics.write_good,
+
+            -- .env files
+            diagnostics.dotenv_linter,
+
+            --git
+            diagnostics.commitlint,
+            code_actions.gitsigns,
+
+            -- go
+            -- code_actions.gomodifytags,
+            -- code_actions.impl,
+            -- diagnostics.golangci_lint,
+            -- diagnostics.gospel,
+            -- formatting.gofmt,
+            -- formatting.goimports,
+            -- formatting.golines,
+
+            -- html/CSS
+            -- diagnostics.curlylint,
+            -- diagnostics.djlint,
+            -- diagnostics.erb_lint,
+            -- diagnostics.stylelint,
+            -- diagnostics.stylint,
+            -- diagnostics.tidy,
+            -- formatting.djhtml,
+            -- formatting.djlint,
+            -- formatting.htmlbeautifier,
+            -- formatting.stylelint,
+
+            -- javascript/typescript
+            -- code_actions.eslint,
+            -- diagnostics.deno_lint,
+            -- diagnostics.eslint,
+            -- diagnostics.jshint,
+            -- diagnostics.npm_groovy_lint,
+            -- diagnostics.semistandardjs,
+            -- diagnostics.standardjs,
+            -- diagnostics.tsc,
+            -- diagnostics.xo,
+            -- formatting.biome,
+            -- formatting.deno_fmt,
+            -- formatting.docformatter,
+            -- formatting.eslint,
+            formatting.prettier,
+            -- formatting.prismaFmt,
+            -- formatting.semistandardjs,
+            -- formatting.standardjs,
+            -- formatting.standardts,
+
+            -- json/yaml/toml
+            -- diagnostics.jsonlint,
+            -- diagnostics.spectral,
+            -- diagnostics.yamllint,
+            -- formatting.fixjson,
+            -- formatting.json_tool,
+            -- formatting.rustywind,
+            -- formatting.taplo,
+            -- formatting.xmlformat,
+            -- formatting.xmllint,
+            -- formatting.yamlfix,
+            -- formatting.yamlfmt,
+
+            -- latex
+            -- diagnostics.chktex,
+
+            -- lua
+            completion.luasnip,
+            -- diagnostics.luacheck,
+            diagnostics.selene,
+            -- formatting.lua_format,
+            formatting.stylua,
+
+            -- makefiles
+            -- diagnostics.checkmake,
+            -- diagnostics.cmake_lint,
+
+            -- markup/markdown
+            -- diagnostics.markdownlint,
+            -- diagnostics.markuplint,
+            -- diagnostics.mdl,
+            -- formatting.cbfmt,
+            -- formatting.markdownlint,
+            -- formatting.markdown_toc,
+            -- formatting.mdformat,
+            -- formatting.remark,
+
+            -- nix
+            -- diagnostics.deadnix,
+            -- diagnostics.statix,
+            -- formatting.alejandra,
+            -- formatting.nixfmt,
+            -- formatting.nixpkgs_fmt,
+
+            -- nginx
+            -- formatting.nginx_beautifier,
+
+            -- protocol buffers
+            -- diagnostics.buf,
+            -- diagnostics.protolint,
+            -- formatting.buf,
+
+            -- php
+            -- diagnostics.php,
+            -- formatting.blade_formatter,
+            -- formatting.pint,
+
+            -- puppet
+            -- diagnostics.puppet_lint,
+            -- formatting.puppet_lint,
+
+            -- python
+            -- diagnostics.bandit, -- must be installed with `pip install bandit`
+            -- diagnostics.flake8,
+            -- diagnostics.mypy,
+            -- diagnostics.pycodestyle,
+            -- diagnostics.pydocstyle,
+            -- diagnostics.pylama,
+            -- diagnostics.pylint,
+            -- diagnostics.ruff,
+            -- diagnostics.semgrep,
+            -- diagnostics.vulture, -- must be installed with `pip install vulture`
+            -- formatting.autoflake,
+            -- formatting.autopep8,
+            -- formatting.black,
+            -- formatting.blue,
+            -- formatting.isort,
+            -- formatting.pyflyby,
+            -- formatting.pyink,
+            -- formatting.ruff,
+            -- formatting.ruff_format,
+            -- formatting.yapf,
+
+            -- rust
+            -- formatting.rustfmt,
+
+            -- sql
+            -- diagnostics.sqlfluff,
+            -- formatting.sqlfluff,
+            -- formatting.sqlfmt,
+            -- formatting.sql_formatter,
+
+            -- terraform
+            -- formatting.terrafmt,
+            -- formatting.terraform_fmt,
+
+            -- vimscript
+            diagnostics.vint,
+
+            -- -- language agnostic
+            -- code_actions.ltrs,
+            -- code_actions.refactoring,
+            -- code_actions.ts_node_action,
+            -- diagnostics.editorconfig_checker,
+            -- diagnostics.ltrs,
+            -- diagnostics.todo_comments,
+            diagnostics.trail_space,
+            -- diagnostics.typos,
+            formatting.textlint,
+            -- formatting.trim_newlines,
+            -- formatting.trim_whitespace,
+            -- hover.dictionary,
+            -- hover.printenv,
+
+          }
+        })
+
+        -- local root_dir = function(fname)
+        --   return fname:match("my-project") and "my-project-root"
+        -- end
+
+        require('mason-null-ls').setup({
+          ensure_installed = nil,
+          automatic_installation = true,
+          automatic_setup = true,
+          -- handlers = {},
+        })
+      end,
+    },
+  },
+
+  -- nvim-lint
+  "mfussenegger/nvim-lint",
+  enable = true,
+  config = function()
+    require('lint').linters_by_ft = {
+      lua = { 'selene', 'luacheck' },
+      python = { 'flake8' },
+      ansible = { 'ansible_lint' },
+      javascript = { 'biomejs', 'eslint' },
+      cpp = { "cpplint" },
+      [".env"] = { 'dotenv_linter' },
+      html = { 'tidy' },
+      json = { 'jsonlint' },
+      nix = { 'nix' },
+      php = { 'php' },
+
+    }
+
+    vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+      callback = function()
+        require("lint").try_lint()
+      end,
+    })
+  end,
+
+  -- conform.nvim for formatting
+  'stevearc/conform.nvim',
+  event = { 'BufWritePre' },
+  cmd = { 'ConformInfo' },
+  keys = {
+    {
+      '<leader>fF',
+      function()
+        require('conform').format { async = true, lsp_fallback = true }
+      end,
+      mode = '',
+      desc = 'Format buffer',
+    },
+  },
+  opts = {
+    formatters_by_ft = {
+      lua = { 'stylua' },
+      python = { 'isort', 'black' },
+      javascript = { { 'prettierd', 'prettier' } },
+      css = { { 'prettierd', 'prettier' } },
+    },
+  },
+}

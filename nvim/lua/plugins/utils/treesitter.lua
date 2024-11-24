@@ -13,7 +13,29 @@ return {
       -- "nvim-treesitter/nvim-ts-rainbow2",
     },
     opts = {
-      ensure_installed = { 'c', 'lua', 'vim', 'vimdoc', 'query', 'elixir', 'heex', 'javascript', 'html', 'css', 'java', 'python', 'go' },
+      ensure_installed = { 
+        'c', 
+        'lua', 
+        'vim', 
+        'vimdoc', 
+        'query', 
+        'elixir', 
+        'heex', 
+        'javascript', 
+        'html', 
+        'css', 
+        'java', 
+        'python', 
+        'go',
+        'markdown',
+        -- Add these for DevOps tools
+        'dockerfile',
+        'yaml',  -- This covers both regular yaml and ansible
+        'terraform',
+        'hcl',    -- For Terraform HCL syntax
+        'json',   -- Useful for various config files
+        'bash'    -- For shell scripts
+      },
       sync_install = false,
       highlight = {
         enable = true,

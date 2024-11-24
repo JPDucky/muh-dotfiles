@@ -1,43 +1,25 @@
+-- lua.lua
 return {
   lua_ls = {
-    Lua = {
-      runtime = {
-        version = 'LuaJIT',
-        path = vim.split(package.path, ';'),
-      },
-      diagnostics = {
-        globals = {'vim', 'use'},
-        disable = {"lowercase-global", "undefined-global"},
-      },
-      workspace = {
-        library = {
-          [vim.fn.expand('$VIMRUNTIME/lua')] = true,
-          [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
+    settings = {
+      Lua = {
+        runtime = {
+          version = 'LuaJIT'
         },
-        maxPreload = 1000,
-        preloadFileSize = 1000,
-        checkThirdParty = true,
-      },
-      telemetry = { enable = false },
-      completion = {
-        callSnippet = "Replace",
-        keywordSnippet = 'Disable',
-        showWord = true,
-        displayContext = 5,
-        preferred = true,
-        autoRequire = true,
-      },
-      hint = {
-        enabled = true,
-      },
-      format = {
-        enable = true,
-        defaultConfig = {
-          indent_style = "space",
-          indent_size = "2",
-          continuation_indent_size = "2",
+        diagnostics = {
+          globals = { 'vim' }
         },
-      },
-    },
-  },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file("", true),
+          checkThirdParty = false,
+        },
+        telemetry = {
+          enable = false,
+        },
+        format = {
+          enable = false, -- disable if you want to use stylua instead
+        }
+      }
+    }
+  }
 }

@@ -36,3 +36,29 @@ vim.opt.scrolloff = 10
 -- vim.g.netrw_browse_split = 4
 -- vim.g.netrw_altv = 1
 -- vim.g.netrw_winsize = 25
+
+
+-- Filetype detection for docker-compose and ansible files
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = {
+    "docker-compose*.{yaml,yml}",
+    "*compose*.{yaml,yml}",
+  },
+  callback = function()
+    vim.opt_local.filetype = "yaml.docker-compose"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = {
+    "*playbook*.{yaml,yml}",
+    "*/playbooks/*.{yaml,yml}",
+    "*/roles/*/tasks/*.{yaml,yml}",
+    "*/roles/*/handlers/*.{yaml,yml}",
+    "*/roles/*/vars/*.{yaml,yml}",
+    "*/inventory/*.{yaml,yml}"
+  },
+  callback = function()
+    vim.opt_local.filetype = "yaml.ansible"
+  end,
+})
