@@ -337,6 +337,7 @@ return {
     { "<leader>c", name = "[C]ode" },
     { "<leader>ca", function() vim.lsp.buf.code_action() end, desc = "Action" },
     { "<leader>ct", function() vim.lsp.buf.type_definition() end, desc = "Type Definition" },
+    { "<leader>ce", function() vim.g.codeium_enabled = false end, desc = "Disable Codeium" },
 
     -- Debug group
     { "<leader>d", name = "[D]ebug" },

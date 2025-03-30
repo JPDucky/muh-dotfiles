@@ -131,11 +131,11 @@ return {
             diagnostics.cmake_lint,
 
             -- markup/markdown
-            diagnostics.markdownlint,
-            diagnostics.markuplint,
+            -- diagnostics.markdownlint,
+            -- diagnostics.markuplint,
             -- diagnostics.mdl,
             -- formatting.cbfmt,
-            formatting.markdownlint,
+            -- formatting.markdownlint,
             -- formatting.markdown_toc,
             -- formatting.mdformat,
             -- formatting.remark,

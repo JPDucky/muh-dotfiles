@@ -59,6 +59,7 @@ return {
         },
         sources = {
           { name = 'nvim_lsp' },
+          { name = 'codeium' },
           { name = 'luasnip' },
           { name = "neorg" },
           { name = "path" },

@@ -88,7 +88,11 @@ require('lazy').setup({
   { import = 'plugins.debug' },
   --NOTE: Plugins in the /after directory will be loaded "after" the ones in the /plugin directory
   { import = 'after.plugins' },
-}, {})
+}, {
+  rocks = {
+    enabled = false
+  }
+})
 
 -- [[ Setting options ]]
 -- See `:help vim.o`

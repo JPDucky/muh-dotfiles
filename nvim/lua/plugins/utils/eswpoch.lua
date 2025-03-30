@@ -1,6 +1,6 @@
 return {
   "hlucco/nvim-eswpoch",
-  enabled = true,
+  enabled = false,
   config = function()
     timezone = {
       America_New_York = -4

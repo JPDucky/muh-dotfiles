@@ -10,7 +10,7 @@ return {
   prismals = {},
   svelte = {},
   tailwindcss = {},
-  tsserver = {},
+  ts_ls = {},
   volar = {},
   vtsls = {},
   vuels = {},
